@@ -1,0 +1,80 @@
+
+# 🌐 Kubernetes Ingress – Quick Notes
+
+### 🔹 What is Ingress?
+
+* Ingress = Kubernetes resource that **manages external access to Services** (HTTP/HTTPS).
+* Provides a **single entry point** for multiple services.
+* Needs an **Ingress Controller** (e.g., NGINX, Traefik, HAProxy, cloud LB).
+
+---
+
+### 🔑 Why use Ingress?
+
+* Instead of 1 LoadBalancer per service → **one LoadBalancer for all services**.
+* Supports **host-based** and **path-based** routing.
+* Handles **SSL/TLS termination (HTTPS)**.
+* Central place for routing + security rules.
+* Saves cost (fewer LoadBalancers).
+
+---
+
+### ⚙️ How it works
+
+1. **Client request** → hits external LB (cloud provisioned).
+2. LB forwards to **Ingress Controller** running in the cluster.
+3. Ingress Controller checks **Ingress rules**.
+4. Request routed to correct **Service → Pod(s)**.
+
+---
+
+### 📑 Example Ingress Rule
+
+```yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+spec:
+  rules:
+    - host: app1.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app1-service
+                port:
+                  number: 80
+    - host: app2.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: app2-service
+                port:
+                  number: 80
+```
+
+---
+
+### 🔑 Key Points to Remember
+
+* **Service types vs Ingress**:
+
+  * NodePort → Exposes on `<NodeIP>:<Port>`
+  * LoadBalancer → One external IP per Service
+  * Ingress → One external IP for **many Services**
+* Works only for **HTTP/HTTPS (Layer 7)** traffic.
+* Needs **Ingress Controller** to function (Ingress alone does nothing).
+* Supports **TLS/SSL**, rewrites, redirects, auth.
+
+---
+
+✅ **One-liner:**
+**Ingress = HTTP/HTTPS smart router for Kubernetes, giving you one LoadBalancer to expose many services efficiently.**
+
+---
